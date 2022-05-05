@@ -1,3 +1,45 @@
+#if 1
+#include <cstdio>
+#if !defined(RCC_ENABLE1)
+#define RCC_ENABLE1 "no enable1"
+#endif
+
+#define STRINGIZE_INNER(x) #x
+#define STRINGIZE(x) STRINGIZE_INNER(x)
+
+const char* GPIOA[] = {
+	"pinA0",
+	"pinA1",
+	"pinA2",
+	"pinA3",
+	"pinA4",
+	"pinA5",
+	"pinA5",
+	"pinA6",
+	"pinA7",
+	"pinA8",
+};
+const char* GPIO[] = {
+	"pin0",
+	"pin1",
+	"pin2",
+	"pin3",
+	"pin4",
+	"pin5",
+	"pin5",
+	"pin6",
+	"pin7",
+	"pin8",
+};
+
+int main() {
+	printf("board: <%s> part: <%s> led1: <%s>(%s), enable1: <%s>\n",
+		STRINGIZE(BOARD), STRINGIZE(PART), STRINGIZE(GPIO_LED1), GPIO_LED1, RCC_ENABLE1);
+	//printf("led: <%s> enabl1: <%s>\n", GPIO_LED1, RCC_ENABLE1);
+	return 0;
+}
+
+#else
 #include <gpio/gpio.h>
 #include <rcc/rcc.h>
 
@@ -39,3 +81,4 @@ int main()
 		}
 	}
 }
+#endif

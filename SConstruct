@@ -17,10 +17,13 @@ boards_gd32v = [
 for b in boards_wch:
     bdir = "build/" + b.part
     VariantDir(bdir, "src")
-    env = SConscript("extern/laks/build/env.py")
-    env.SelectMCU(b.part)
+    #env = SConscript("extern/laks/build/env.py")
+    env = Environment()
+    #env.SelectMCU(b.part)
     env.SetOption("num_jobs", 8) # lala, fingers in ears
     env.Append(CPPDEFINES = [
+        ("BOARD", b.brd),
+        ("PART", b.part),
         ("GPIO_LED1", b.led1),
     ])
     if b.led1_enable:
@@ -28,11 +31,5 @@ for b in boards_wch:
             ("RCC_ENABLE1", b.led1_enable),
         ])
     #env.Firmware(f"miniblink-{b.brd}.elf", f"{bdir}/template_wch.cpp")
-    fw = env.Program(f"miniblink-{b.brd}.elf", f"{bdir}/template_wch.cpp")
-    env["LINK_SCRIPT"] = "#generated.ld"
-    print("wahs?")
-    for k in env.items():
-        print(k)
-    print("end of term")
-    #env.Depends(fw, '#${LAKS_PATH}/ld_scripts/${LINK_SCRIPT}')
+    env.Program(f"miniblink-{b.brd}.elf", f"#{bdir}/template_wch.cpp")
 
