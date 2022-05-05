@@ -1,0 +1,4 @@
+build/
+miniblink*.elf
+.sconsign.dblite
+nbproject/
