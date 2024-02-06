@@ -13,13 +13,39 @@ boards_gd32v = [
         ("Longan-Nano", "gd32vf103cb", "GPIOA[1]", "GPIOA"),
 ]
 
+toolpath = 'extern/laks/build/scons_tools',
+tools = [
+    'default',
+    'tool_selectmcu',
+    'tool_firmware',
+    'tool_jinja2',
+    'tool_platform_spec',
+    'tool_protonium',
+],
+
 
 for b in boards_wch:
-    bdir = "build/" + b.part
-    VariantDir(bdir, "src")
-    #env = SConscript("extern/laks/build/env.py")
-    env = Environment()
-    #env.SelectMCU(b.part)
+    bdir = "buildx/" + b.part
+    #env = SConscript("extern/laks/build/env.py", variant_dir=bdir)
+    env = Environment(
+        ENV=os.environ,
+        LAKS_PATH="#extern/laks",
+        tools=[
+        'default',
+        'tool_selectmcu',
+        'tool_firmware',
+        'tool_jinja2',
+        'tool_platform_spec',
+        'tool_protonium',
+        ],
+        toolpath=["extern/laks/build/scons_tools"])
+    #env.VariantDir(bdir, "src")
+    #env.t
+    #env = SConscript("extern/laks/build/env.py", variant_dir=bdir)
+    #env.Replace(LAKS_PATH=Dir("extern/laks"))
+    #env.VariantDir(bdir, "src")
+    #env = Environment()
+    env.SelectMCU(b.part, variant_dir=bdir)
     env.SetOption("num_jobs", 8) # lala, fingers in ears
     env.Append(CPPDEFINES = [
         ("BOARD", b.brd),
@@ -31,5 +57,9 @@ for b in boards_wch:
             ("RCC_ENABLE1", b.led1_enable),
         ])
     #env.Firmware(f"miniblink-{b.brd}.elf", f"{bdir}/template_wch.cpp")
-    env.Program(f"miniblink-{b.brd}.elf", f"#{bdir}/template_wch.cpp")
+    #env.Program(f"miniblink-{b.brd}.elf", f"#{bdir}/template_wch.cpp", variant_dir=bdir)
+    objs = [env.Object(target=f"{bdir}/{f}.o", source=f"#src/{f}") for f in ["template_wch.cpp"]]
+    #env.Program(f"miniblink-{b.brd}.elf", f"#src/template_wch.cpp", variant_dir=bdir)
+    #env.Program(f"miniblink-{b.brd}.elf", objs, variant_dir=bdir)
+    env.Firmware(f"miniblink-{b.brd}.elf", objs, variant_dir=bdir)
 
