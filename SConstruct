@@ -3,6 +3,7 @@ import os.path
 from collections import namedtuple
 
 Board = namedtuple("Board", "brd part led1 led1_enable")
+Family = namedtuple("Family", "template boards")
 
 boards_wch = [
         Board("CH582M-R0-1v0", "ch582m", "GPIO[0]", None), # Needs jumper wire to "LED1" or "LED2"
@@ -13,53 +14,24 @@ boards_gd32v = [
         ("Longan-Nano", "gd32vf103cb", "GPIOA[1]", "GPIOA"),
 ]
 
-toolpath = 'extern/laks/build/scons_tools',
-tools = [
-    'default',
-    'tool_selectmcu',
-    'tool_firmware',
-    'tool_jinja2',
-    'tool_platform_spec',
-    'tool_protonium',
-],
+fam_wch = Family("template_wch.cpp", boards_wch)
+families = [fam_wch]
 
-
-for b in boards_wch:
-    bdir = "buildx/" + b.part
-    #env = SConscript("extern/laks/build/env.py", variant_dir=bdir)
-    env = Environment(
-        ENV=os.environ,
-        LAKS_PATH="#extern/laks",
-        tools=[
-        'default',
-        'tool_selectmcu',
-        'tool_firmware',
-        'tool_jinja2',
-        'tool_platform_spec',
-        'tool_protonium',
-        ],
-        toolpath=["extern/laks/build/scons_tools"])
-    #env.VariantDir(bdir, "src")
-    #env.t
-    #env = SConscript("extern/laks/build/env.py", variant_dir=bdir)
-    #env.Replace(LAKS_PATH=Dir("extern/laks"))
-    #env.VariantDir(bdir, "src")
-    #env = Environment()
-    env.SelectMCU(b.part, variant_dir=bdir)
-    env.SetOption("num_jobs", 8) # lala, fingers in ears
-    env.Append(CPPDEFINES = [
-        ("BOARD", b.brd),
-        ("PART", b.part),
-        ("GPIO_LED1", b.led1),
-    ])
-    if b.led1_enable:
+for fam in families:
+    for b in fam.boards:
+        bdir = "buildx/" + b.part
+        env = SConscript("extern/laks/build/env.py")
+        env.SelectMCU(b.part, variant_dir=bdir)
+        env.SetOption("num_jobs", 8) # lala, fingers in ears
         env.Append(CPPDEFINES = [
-            ("RCC_ENABLE1", b.led1_enable),
+            ("BOARD", b.brd),
+            ("PART", b.part),
+            ("GPIO_LED1", b.led1),
         ])
-    #env.Firmware(f"miniblink-{b.brd}.elf", f"{bdir}/template_wch.cpp")
-    #env.Program(f"miniblink-{b.brd}.elf", f"#{bdir}/template_wch.cpp", variant_dir=bdir)
-    objs = [env.Object(target=f"{bdir}/{f}.o", source=f"#src/{f}") for f in ["template_wch.cpp"]]
-    #env.Program(f"miniblink-{b.brd}.elf", f"#src/template_wch.cpp", variant_dir=bdir)
-    #env.Program(f"miniblink-{b.brd}.elf", objs, variant_dir=bdir)
-    env.Firmware(f"miniblink-{b.brd}.elf", objs, variant_dir=bdir)
+        if b.led1_enable:
+            env.Append(CPPDEFINES = [
+                ("RCC_ENABLE1", b.led1_enable),
+            ])
+        objs = [env.Object(target=f"{bdir}/{f}.o", source=f"#src/{f}") for f in [fam.template]]
+        env.Firmware(f"miniblink-{b.brd}.elf", objs, variant_dir=bdir)
 
