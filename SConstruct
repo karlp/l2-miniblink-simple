@@ -19,16 +19,20 @@ boards_kx = [
     Board("FRDM-K66", "mk66fn2m0vmd18", "GPIOA[11]", "sim::PORTA"), # Blue led on RGB
     Board("FRDM-K64", "MK64FN1M0VLL12", "GPIOB[21]", "sim::PORTB"), # Blue led on RGB
 ]
+boards_stm32 = [
+    Board("das-kb4-bara2_r2023-12", "stm32g431cbu", "GPIOA[2]", "rcc::GPIOA"),
+]
 
 fam_wch = Family("template_wch.cpp", boards_wch)
 fam_kx = Family("template_kx.cpp", boards_kx)
-families = [fam_wch, fam_kx]
+fam_stm = Family("template_stm.cpp", boards_stm32)
+families = [fam_wch, fam_kx, fam_stm]
 
 for fam in families:
     for b in fam.boards:
-        bdir = "buildx/" + b.part
+        bdir = "buildx/" + b.part.lower()
         env = SConscript("extern/laks/build/env.py")
-        env.SelectMCU(b.part, variant_dir=bdir)
+        env.SelectMCU(b.part.lower(), variant_dir=bdir)
         env.SetOption("num_jobs", 8) # lala, fingers in ears
         env.Append(CPPPATH=bdir)
         env.Append(CPPDEFINES = [
