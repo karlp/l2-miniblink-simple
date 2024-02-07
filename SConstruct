@@ -14,9 +14,14 @@ boards_gd32v = [
         ("GD32VF103C-START", "gd32vf103cb", "GPIOA[7]", "GPIOA"),
         ("Longan-Nano", "gd32vf103cb", "GPIOA[1]", "GPIOA"),
 ]
+boards_kx = [
+    Board("TWR-K70F120M", "mk70fn1m0vmj12", "GPIOA[11]", "sim::PORTA"), # orange led
+    Board("FRDM-K66", "mk66fn2m0vmd18", "GPIOA[11]", "sim::PORTA"), # Blue led on RGB
+]
 
 fam_wch = Family("template_wch.cpp", boards_wch)
-families = [fam_wch]
+fam_kx = Family("template_kx.cpp", boards_kx)
+families = [fam_wch, fam_kx]
 
 for fam in families:
     for b in fam.boards:
