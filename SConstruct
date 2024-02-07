@@ -7,7 +7,8 @@ Family = namedtuple("Family", "template boards")
 
 boards_wch = [
         Board("CH582M-R0-1v0", "ch582m", "GPIO[0]", None), # Needs jumper wire to "LED1" or "LED2"
-        Board("CH32V307V-R1-1v0", "ch32v307vct6", "GPIOA[0]", "GPIOA"), # Needs jumper wire to "LED1" or "LED2"
+        # umm, this has a different gpio mode setter... yuk.
+        #Board("CH32V307V-R1-1v0", "ch32v307vct6", "GPIOA[0]", "rcc::GPIOA"), # Needs jumper wire to "LED1" or "LED2"
 ]
 boards_gd32v = [
         ("GD32VF103C-START", "gd32vf103cb", "GPIOA[7]", "GPIOA"),
@@ -23,6 +24,7 @@ for fam in families:
         env = SConscript("extern/laks/build/env.py")
         env.SelectMCU(b.part, variant_dir=bdir)
         env.SetOption("num_jobs", 8) # lala, fingers in ears
+        env.Append(CPPPATH=bdir)
         env.Append(CPPDEFINES = [
             ("BOARD", b.brd),
             ("PART", b.part),
