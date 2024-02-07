@@ -42,6 +42,7 @@ int main()
 	// PCRA.mux(29, NXP_PCR_KX_t<NXP_PCR_KX_reg_t>::Alt1_GPIO);
 	// FIXME - not viable for template yet!
 	PCRA.mux(11, NXP_PCR_KX_t<NXP_PCR_KX_reg_t>::Alt1_GPIO);
+	PCRB.mux(21, NXP_PCR_KX_t<NXP_PCR_KX_reg_t>::Alt1_GPIO);
 
 	led1.set_out();
 

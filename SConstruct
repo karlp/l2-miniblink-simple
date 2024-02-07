@@ -17,6 +17,7 @@ boards_gd32v = [
 boards_kx = [
     Board("TWR-K70F120M", "mk70fn1m0vmj12", "GPIOA[11]", "sim::PORTA"), # orange led
     Board("FRDM-K66", "mk66fn2m0vmd18", "GPIOA[11]", "sim::PORTA"), # Blue led on RGB
+    Board("FRDM-K64", "MK64FN1M0VLL12", "GPIOB[21]", "sim::PORTB"), # Blue led on RGB
 ]
 
 fam_wch = Family("template_wch.cpp", boards_wch)
