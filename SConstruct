@@ -20,14 +20,21 @@ boards_kx = [
     Board("FRDM-K64", "MK64FN1M0VLL12", "GPIOB[21]", "sim::PORTB"), # Blue led on RGB
 ]
 boards_stm32 = [
+    Board("nucleo-g431rb", "stm32g431rbu", "GPIOA[5]", "rcc::GPIOA"),
     Board("das-kb4-bara2_r2023-12", "stm32g431cbu", "GPIOA[2]", "rcc::GPIOA"),
 ]
 
 fam_wch = Family("template_wch.cpp", boards_wch)
 fam_kx = Family("template_kx.cpp", boards_kx)
 fam_stm = Family("template_stm.cpp", boards_stm32)
-families = [fam_wch, fam_kx, fam_stm]
+families = [
+    fam_wch,
+    #fam_kx,
+    fam_stm,
+]
 
+
+# -Wl,--print-gc-sections'
 for fam in families:
     for b in fam.boards:
         bdir = "buildx/" + b.part.lower()
